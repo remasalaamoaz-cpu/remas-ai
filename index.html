@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ريماس AI</title>
+<title>ريماس AI ⚡</title>
 
 <style>
 body{
@@ -16,6 +16,7 @@ body{
   flex-direction:column;
 }
 
+/* الهيدر */
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -38,12 +39,14 @@ body{
 }
 
 .logo{
-  width:40px;
-  height:40px;
+  width:42px;
+  height:42px;
   border-radius:50%;
   object-fit:cover;
+  border:2px solid #3b82f6;
 }
 
+/* الشات */
 #chat{
   flex:1;
   padding:15px;
@@ -52,9 +55,10 @@ body{
 
 .msg{
   margin:10px 0;
-  padding:10px;
+  padding:12px;
   border-radius:10px;
   max-width:75%;
+  line-height:1.5;
 }
 
 .user{
@@ -67,10 +71,12 @@ body{
   margin-right:auto;
 }
 
+/* الإدخال */
 #inputBox{
   display:flex;
   padding:10px;
   background:#0f172a;
+  border-top:1px solid #1f2937;
 }
 
 input{
@@ -79,6 +85,8 @@ input{
   border:none;
   border-radius:10px;
   outline:none;
+  background:#111827;
+  color:white;
 }
 
 button{
@@ -102,7 +110,7 @@ button{
   </div>
 
   <div class="right">
-    <img src="masa.jpg" class="logo">
+    <img src="masse.jpg" class="logo">
     🤖 ريماس AI
   </div>
 
@@ -125,7 +133,7 @@ async function send(){
   input.value="";
 
   try{
-    let res = await fetch("/api/chat",{
+    let res = await fetch("https://remas-ai.vercel.app/api/chat", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({message:text})
