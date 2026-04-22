@@ -16,35 +16,35 @@ body{
   flex-direction:column;
 }
 
+/* الهيدر */
 .topbar{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:12px 15px;
+  padding:12px;
   background:#0f172a;
   border-bottom:1px solid #1f2937;
 }
 
 .left{
+  font-size:13px;
   font-weight:bold;
-  font-size:14px;
 }
 
 .right{
   display:flex;
   align-items:center;
   gap:10px;
-  font-weight:bold;
 }
 
 .logo{
-  width:45px;
-  height:45px;
+  width:42px;
+  height:42px;
   border-radius:50%;
   object-fit:cover;
-  border:2px solid #3b82f6;
 }
 
+/* الشات */
 #chat{
   flex:1;
   padding:15px;
@@ -54,7 +54,7 @@ body{
 .msg{
   margin:10px 0;
   padding:12px;
-  border-radius:10px;
+  border-radius:12px;
   max-width:75%;
 }
 
@@ -68,13 +68,16 @@ body{
   margin-right:auto;
 }
 
+/* شريط الإدخال */
 #inputBox{
   display:flex;
+  align-items:center;
   padding:10px;
   background:#0f172a;
-  border-top:1px solid #1f2937;
+  gap:8px;
 }
 
+/* input */
 input{
   flex:1;
   padding:12px;
@@ -85,14 +88,25 @@ input{
   color:white;
 }
 
-button{
-  margin-right:10px;
-  padding:12px 18px;
-  background:#3b82f6;
-  color:white;
+/* الأزرار */
+.btn{
+  width:42px;
+  height:42px;
   border:none;
   border-radius:10px;
+  background:#1f2937;
+  color:white;
   cursor:pointer;
+  font-size:18px;
+}
+
+.send{
+  background:#3b82f6;
+}
+
+/* file hidden */
+#fileInput{
+  display:none;
 }
 </style>
 </head>
@@ -102,7 +116,7 @@ button{
 <header class="topbar">
 
   <div class="left">
-    👨‍💻 المبرمج: ريماس علاء معاذ
+    👨‍💻 ريماس علاء معاذ
   </div>
 
   <div class="right">
@@ -114,30 +128,45 @@ button{
 
 <div id="chat"></div>
 
+<!-- input area -->
 <div id="inputBox">
-  <input id="msg" placeholder="اسأل أي حاجة...">
-  <button onclick="send()">إرسال</button>
+
+  <!-- زر + رفع ملفات -->
+  <button class="btn" onclick="document.getElementById('fileInput').click()">+</button>
+  <input type="file" id="fileInput" accept="image/*">
+
+  <!-- input -->
+  <input id="msg" placeholder="اكتب سؤالك...">
+
+  <!-- مايك -->
+  <button class="btn" onclick="startMic()">🎤</button>
+
+  <!-- إرسال -->
+  <button class="btn send" onclick="send()">➤</button>
+
 </div>
 
 <script>
+
+let history=[];
+
+/* إرسال */
 async function send(){
-  let input = document.getElementById("msg");
-  let text = input.value;
+  let input=document.getElementById("msg");
+  let text=input.value;
   if(!text) return;
 
   add(text,"user");
   input.value="";
 
   try{
-    let res = await fetch("https://remas-ai.vercel.app/api/chat", {
+    let res=await fetch("https://remas-ai.vercel.app/api/chat",{
       method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
+      headers:{"Content-Type":"application/json"},
       body:JSON.stringify({message:text})
     });
 
-    let data = await res.json();
+    let data=await res.json();
     add(data.reply,"bot");
 
   }catch(e){
@@ -145,12 +174,41 @@ async function send(){
   }
 }
 
+/* إضافة رسالة */
 function add(text,type){
   let div=document.createElement("div");
   div.className="msg "+type;
   div.textContent=text;
   document.getElementById("chat").appendChild(div);
+  document.getElementById("chat").scrollTop=999999;
 }
+
+/* مايك */
+function startMic(){
+  let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    alert("المتصفح لا يدعم المايك");
+    return;
+  }
+
+  let rec = new SpeechRecognition();
+  rec.lang = "ar-EG";
+
+  rec.start();
+
+  rec.onresult = function(event){
+    document.getElementById("msg").value = event.results[0][0].transcript;
+  }
+}
+
+/* رفع ملفات */
+document.getElementById("fileInput").addEventListener("change", function(e){
+  let file = e.target.files[0];
+  if(!file) return;
+
+  add("📎 تم رفع ملف: " + file.name,"bot");
+});
+
 </script>
 
 </body>
