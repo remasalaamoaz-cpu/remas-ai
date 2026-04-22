@@ -1,36 +1,56 @@
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
 export default async function handler(req, res) {
-  try {
-    const msg = req.body?.message || "";
-
-    // رد ذكي بسيط (بدون API خارجي)
-    const reply = generateAnswer(msg);
-
-    res.status(200).json({ reply });
-
-  } catch (error) {
-    res.status(500).json({
-      reply: "حصل خطأ في السيرفر ❌"
+  // حماية من الطلبات الغلط
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      reply: "Method Not Allowed"
     });
   }
-}
 
-// عقل بسيط يجاوب أي سؤال بشكل عام
-function generateAnswer(text) {
-  text = text.toLowerCase();
+  try {
+    const msg = req.body?.message;
 
-  if (!text) return "اكتب سؤال من فضلك 🤖";
+    if (!msg || msg.trim().length === 0) {
+      return res.status(200).json({
+        reply: "اكتب سؤالك الأول 🤖"
+      });
+    }
 
-  if (text.includes("من هو") || text.includes("ما هو")) {
-    return "سؤال جميل 🤖 ابحث عنه أو وضحه أكثر وسأساعدك.";
+    const response = await client.chat.completions.create({
+      model: "gpt-4o-mini",
+      temperature: 0.7,
+      messages: [
+        {
+          role: "system",
+          content: `
+أنت مساعد ذكي اسمه "ريماس AI".
+تجيب على أي سؤال في كل المجالات (تعليم، تاريخ، علوم، رياضة، تقنية).
+الإجابات تكون:
+- صحيحة قدر الإمكان
+- مختصرة وواضحة
+- باللغة العربية
+- بدون حشو أو تكرار
+`
+        },
+        {
+          role: "user",
+          content: msg
+        }
+      ]
+    });
+
+    return res.status(200).json({
+      reply: response.choices[0].message.content
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      reply: "حصل خطأ مؤقت في السيرفر ❌ حاول مرة أخرى"
+    });
   }
-
-  if (text.includes("عاصمة")) {
-    return "العواصم تختلف حسب الدولة، اذكر اسم الدولة وسأجيبك 🇺🇳";
-  }
-
-  if (text.includes("2+2")) {
-    return "2 + 2 = 4";
-  }
-
-  return "أنا ريماس AI 🤖 فهمت سؤالك: " + text + " - وحاليًا أتعلم لأجيب بشكل أدق.";
 }
