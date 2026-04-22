@@ -1,130 +1,119 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rimas AI | ريماس</title>
+<title>ريماس AI</title>
 
 <style>
 body{
-  margin:0;
-  font-family: Arial;
-  background: radial-gradient(circle at top right, #000428, #004e92);
-  color:#fff;
+    margin:0;
+    font-family:Arial;
+    background:linear-gradient(135deg,#000428,#004e92);
+    color:white;
+    display:flex;
+    flex-direction:column;
+    height:100vh;
 }
 
 header{
-  text-align:center;
-  padding:20px;
-  background:rgba(0,0,0,0.6);
-  color:#00e5ff;
-  font-size:22px;
-  font-weight:bold;
-}
-
-.chat-box{
-  max-width:800px;
-  margin:40px auto;
-  background:rgba(0,0,0,0.4);
-  padding:15px;
-  border-radius:15px;
-  box-shadow:0 0 20px #00c3ff;
+    padding:15px;
+    text-align:center;
+    background:rgba(0,0,0,0.5);
+    font-size:22px;
+    font-weight:bold;
 }
 
 #chat{
-  height:420px;
-  overflow:auto;
-  background:#111;
-  padding:10px;
-  border-radius:10px;
+    flex:1;
+    padding:10px;
+    overflow-y:auto;
 }
 
 .msg{
-  margin:10px 0;
-  padding:10px;
-  border-radius:8px;
+    margin:10px 0;
+    padding:10px;
+    border-radius:10px;
+    max-width:80%;
 }
 
-.user{background:#00c853;text-align:right;}
-.bot{background:#333;text-align:left;}
+.user{
+    background:#00c3ff;
+    color:black;
+    margin-right:auto;
+}
 
-.input-area{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
+.bot{
+    background:#222;
+    margin-left:auto;
+}
+
+#inputBox{
+    display:flex;
+    padding:10px;
+    background:rgba(0,0,0,0.6);
 }
 
 input{
-  flex:1;
-  padding:12px;
-  border:none;
-  border-radius:8px;
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:5px;
 }
 
 button{
-  padding:12px 15px;
-  background:#00c3ff;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-@media(max-width:768px){
-  .input-area{flex-direction:column;}
+    padding:10px 15px;
+    margin-right:10px;
+    border:none;
+    background:#00c3ff;
+    cursor:pointer;
+    border-radius:5px;
 }
 </style>
+
 </head>
 
 <body>
 
-<header>💎 Rimas AI | الذكاء الاصطناعي الحقيقي</header>
+<header>🤖 ريماس AI</header>
 
-<div class="chat-box">
+<div id="chat"></div>
 
-  <div id="chat"></div>
-
-  <div class="input-area">
-    <input id="msg" placeholder="اكتب أي سؤال...">
-    <button onclick="sendMsg()">إرسال</button>
-  </div>
-
+<div id="inputBox">
+<input type="text" id="msg" placeholder="اكتب سؤالك هنا...">
+<button onclick="send()">إرسال</button>
 </div>
 
 <script>
-async function sendMsg(){
+async function send(){
+    let input = document.getElementById("msg");
+    let text = input.value;
+    if(!text) return;
 
-  let input = document.getElementById("msg");
-  let chat = document.getElementById("chat");
+    add(text,"user");
+    input.value="";
 
-  if(input.value.trim()=="") return;
+    try{
+        let res = await fetch("https://remas-ai.vercel.app/api/chat",{
+            method:"POST",
+            headers:{ "Content-Type":"application/json" },
+            body:JSON.stringify({message:text})
+        });
 
-  let text = input.value;
+        let data = await res.json();
 
-  chat.innerHTML += `<div class='msg user'>👤 ${text}</div>`;
-  input.value="";
+        add(data.reply || "مفيش رد حاليا","bot");
 
-  chat.innerHTML += `<div class='msg bot'>🤖 جاري التفكير...</div>`;
+    }catch(e){
+        add("حدث خطأ في السيرفر ❌","bot");
+    }
+}
 
-  try{
-
-    let res = await fetch("https://YOUR-VERCEL-API.vercel.app/api/chat", {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body: JSON.stringify({message:text})
-    });
-
-    let data = await res.json();
-
-    chat.innerHTML += `<div class='msg bot'>🤖 ${data.reply}</div>`;
-    chat.scrollTop = chat.scrollHeight;
-
-  }catch(e){
-
-    chat.innerHTML += `<div class='msg bot'>⚠️ السيرفر غير متاح مؤقتًا</div>`;
-  }
+function add(text,type){
+    let div=document.createElement("div");
+    div.className="msg "+type;
+    div.innerText=text;
+    document.getElementById("chat").appendChild(div);
 }
 </script>
 
