@@ -3,71 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ريماس AI</title>
+<title>اسأل ريماس AI</title>
 
 <style>
-body{
-    margin:0;
-    font-family:Arial;
-    background:linear-gradient(135deg,#000428,#004e92);
-    color:white;
-    display:flex;
-    flex-direction:column;
-    height:100vh;
+body {
+    margin: 0;
+    font-family: 'Cairo', sans-serif;
+    background: radial-gradient(circle at top right, #000428, #004e92);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    text-align: center;
 }
 
-header{
-    padding:15px;
-    text-align:center;
-    background:rgba(0,0,0,0.5);
-    font-size:22px;
-    font-weight:bold;
+/* الهيدر */
+header {
+    padding: 20px;
 }
 
-#chat{
-    flex:1;
-    padding:10px;
-    overflow-y:auto;
+header img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 3px solid #00c3ff;
+    box-shadow: 0 0 15px #00c3ff;
 }
 
-.msg{
-    margin:10px 0;
-    padding:10px;
-    border-radius:10px;
-    max-width:80%;
+header h1 {
+    margin-top: 10px;
+    font-size: 28px;
 }
 
-.user{
-    background:#00c3ff;
-    color:black;
-    margin-right:auto;
+/* الشات */
+#chat {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    text-align: right;
 }
 
-.bot{
-    background:#222;
-    margin-left:auto;
+.msg {
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 10px;
+    max-width: 80%;
+    line-height: 1.6;
 }
 
-#inputBox{
-    display:flex;
-    padding:10px;
-    background:rgba(0,0,0,0.6);
+.user {
+    background: #00c3ff;
+    color: black;
+    margin-left: auto;
 }
 
-input{
-    flex:1;
-    padding:10px;
-    border:none;
-    border-radius:5px;
+.bot {
+    background: #1e1e1e;
+    margin-right: auto;
 }
 
-button{
-    padding:10px 15px;
-    margin-right:10px;
-    border:none;
-    background:#00c3ff;
-    cursor:pointer;
-    border-radius:5px;
+/* الإدخال */
+#inputBox {
+    display: flex;
+    padding: 10px;
+    background: rgba(0,0,0,0.6);
+}
+
+input {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+button {
+    padding: 12px 20px;
+    margin-right: 10px;
+    border: none;
+    background: #00c3ff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #0099ff;
+    transform: scale(1.05);
 }
 </style>
 
@@ -75,13 +99,16 @@ button{
 
 <body>
 
-<header>🤖 ريماس AI</header>
+<header>
+    <img src="images/masa.jpg">
+    <h1>🤖 اسأل ريماس</h1>
+</header>
 
 <div id="chat"></div>
 
 <div id="inputBox">
-<input type="text" id="msg" placeholder="اكتب سؤالك هنا...">
-<button onclick="send()">إرسال</button>
+    <input type="text" id="msg" placeholder="اكتب سؤالك هنا...">
+    <button onclick="send()">إرسال</button>
 </div>
 
 <script>
@@ -97,7 +124,7 @@ async function send(){
         let res = await fetch("https://remas-ai.vercel.app/api/chat",{
             method:"POST",
             headers:{ "Content-Type":"application/json" },
-            body:JSON.stringify({message:text})
+            body: JSON.stringify({message:text})
         });
 
         let data = await res.json();
@@ -110,9 +137,9 @@ async function send(){
 }
 
 function add(text,type){
-    let div=document.createElement("div");
-    div.className="msg "+type;
-    div.innerText=text;
+    let div = document.createElement("div");
+    div.className = "msg " + type;
+    div.innerText = text;
     document.getElementById("chat").appendChild(div);
 }
 </script>
