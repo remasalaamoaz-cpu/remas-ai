@@ -3,27 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ريماس AI</title>
+<title>ريماس AI ⚡</title>
 
 <style>
 body {
   margin: 0;
   font-family: Arial;
-  background: #0f172a;
+  background: #0b1220;
   color: white;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  height: 100vh;
 }
 
-header {
-  padding: 15px;
-  text-align: center;
-  background: #111827;
-  font-size: 22px;
-  font-weight: bold;
+/* الهيدر */
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 15px;
+  background:#111827;
+  font-size:16px;
 }
 
+.left{
+  font-weight:bold;
+  color:#fff;
+}
+
+.right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:bold;
+  color:#fff;
+}
+
+.logo{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+/* الشات */
 #chat {
   flex: 1;
   padding: 10px;
@@ -38,7 +61,7 @@ header {
 }
 
 .user {
-  background: #3b82f6;
+  background: #2563eb;
   margin-left: auto;
 }
 
@@ -47,6 +70,7 @@ header {
   margin-right: auto;
 }
 
+/* الإدخال */
 #inputBox {
   display: flex;
   padding: 10px;
@@ -63,9 +87,9 @@ input {
 button {
   margin-right: 10px;
   padding: 12px 18px;
-  border: none;
   background: #3b82f6;
   color: white;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
 }
@@ -74,7 +98,16 @@ button {
 
 <body>
 
-<header>🤖 ريماس AI - احترافي</header>
+<header class="topbar">
+  <div class="left">
+    👨‍💻 المبرمج: ريماس علاء معاذ
+  </div>
+
+  <div class="right">
+    <img src="logo.png" class="logo">
+    🤖 ريماس AI
+  </div>
+</header>
 
 <div id="chat"></div>
 
@@ -84,6 +117,8 @@ button {
 </div>
 
 <script>
+let history = [];
+
 async function send(){
   let input = document.getElementById("msg");
   let text = input.value;
@@ -92,15 +127,20 @@ async function send(){
   add(text, "user");
   input.value = "";
 
+  history.push({ role: "user", content: text });
+
   try {
     let res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text })
+      body: JSON.stringify({ message: text, history })
     });
 
     let data = await res.json();
+
     add(data.reply, "bot");
+
+    history.push({ role: "assistant", content: data.reply });
 
   } catch (e) {
     add("خطأ في الاتصال ❌", "bot");
