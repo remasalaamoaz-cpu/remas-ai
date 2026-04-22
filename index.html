@@ -3,144 +3,115 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>اسأل ريماس AI</title>
+<title>ريماس AI</title>
 
 <style>
 body {
-    margin: 0;
-    font-family: 'Cairo', sans-serif;
-    background: radial-gradient(circle at top right, #000428, #004e92);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    text-align: center;
+  margin: 0;
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-/* الهيدر */
 header {
-    padding: 20px;
+  padding: 15px;
+  text-align: center;
+  background: #111827;
+  font-size: 22px;
+  font-weight: bold;
 }
 
-header img {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    border: 3px solid #00c3ff;
-    box-shadow: 0 0 15px #00c3ff;
-}
-
-header h1 {
-    margin-top: 10px;
-    font-size: 28px;
-}
-
-/* الشات */
 #chat {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    text-align: right;
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
 }
 
 .msg {
-    margin: 10px 0;
-    padding: 12px;
-    border-radius: 10px;
-    max-width: 80%;
-    line-height: 1.6;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 10px;
+  max-width: 80%;
 }
 
 .user {
-    background: #00c3ff;
-    color: black;
-    margin-left: auto;
+  background: #3b82f6;
+  margin-left: auto;
 }
 
 .bot {
-    background: #1e1e1e;
-    margin-right: auto;
+  background: #1f2937;
+  margin-right: auto;
 }
 
-/* الإدخال */
 #inputBox {
-    display: flex;
-    padding: 10px;
-    background: rgba(0,0,0,0.6);
+  display: flex;
+  padding: 10px;
+  background: #111827;
 }
 
 input {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
 }
 
 button {
-    padding: 12px 20px;
-    margin-right: 10px;
-    border: none;
-    background: #00c3ff;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: 0.3s;
-}
-
-button:hover {
-    background: #0099ff;
-    transform: scale(1.05);
+  margin-right: 10px;
+  padding: 12px 18px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
 }
 </style>
-
 </head>
 
 <body>
 
-<header>
-    <img src="images/masa.jpg">
-    <h1>🤖 اسأل ريماس</h1>
-</header>
+<header>🤖 ريماس AI - احترافي</header>
 
 <div id="chat"></div>
 
 <div id="inputBox">
-    <input type="text" id="msg" placeholder="اكتب سؤالك هنا...">
-    <button onclick="send()">إرسال</button>
+  <input id="msg" placeholder="اكتب سؤالك...">
+  <button onclick="send()">إرسال</button>
 </div>
 
 <script>
 async function send(){
-    let input = document.getElementById("msg");
-    let text = input.value;
-    if(!text) return;
+  let input = document.getElementById("msg");
+  let text = input.value;
+  if(!text) return;
 
-    add(text,"user");
-    input.value="";
+  add(text, "user");
+  input.value = "";
 
-    try{
-        let res = await fetch("https://remas-ai.vercel.app/api/chat",{
-            method:"POST",
-            headers:{ "Content-Type":"application/json" },
-            body: JSON.stringify({message:text})
-        });
+  try {
+    let res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    });
 
-        let data = await res.json();
+    let data = await res.json();
+    add(data.reply, "bot");
 
-        add(data.reply || "مفيش رد حاليا","bot");
-
-    }catch(e){
-        add("حدث خطأ في السيرفر ❌","bot");
-    }
+  } catch (e) {
+    add("خطأ في الاتصال ❌", "bot");
+  }
 }
 
-function add(text,type){
-    let div = document.createElement("div");
-    div.className = "msg " + type;
-    div.innerText = text;
-    document.getElementById("chat").appendChild(div);
+function add(text, type){
+  let div = document.createElement("div");
+  div.className = "msg " + type;
+  div.innerText = text;
+  document.getElementById("chat").appendChild(div);
 }
 </script>
 
