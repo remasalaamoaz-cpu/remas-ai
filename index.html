@@ -16,7 +16,6 @@ body{
   flex-direction:column;
 }
 
-/* الهيدر */
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -28,8 +27,7 @@ body{
 
 .left{
   font-weight:bold;
-  font-size:13px;
-  opacity:0.9;
+  font-size:14px;
 }
 
 .right{
@@ -45,35 +43,19 @@ body{
   border-radius:50%;
   object-fit:cover;
   border:2px solid #3b82f6;
-  box-shadow:0 0 10px #3b82f6;
-  transition:0.3s;
 }
 
-.logo:hover{
-  transform:scale(1.1);
-}
-
-/* الشات */
 #chat{
   flex:1;
   padding:15px;
   overflow-y:auto;
 }
 
-/* الرسائل */
 .msg{
   margin:10px 0;
   padding:12px;
-  border-radius:12px;
+  border-radius:10px;
   max-width:75%;
-  line-height:1.6;
-  font-size:15px;
-  animation:fadeIn 0.2s ease-in;
-}
-
-@keyframes fadeIn{
-  from{opacity:0; transform:translateY(10px);}
-  to{opacity:1; transform:translateY(0);}
 }
 
 .user{
@@ -86,14 +68,6 @@ body{
   margin-right:auto;
 }
 
-/* typing */
-.typing{
-  font-size:13px;
-  opacity:0.6;
-  margin:5px 0;
-}
-
-/* الإدخال */
 #inputBox{
   display:flex;
   padding:10px;
@@ -119,11 +93,6 @@ button{
   border:none;
   border-radius:10px;
   cursor:pointer;
-  font-weight:bold;
-}
-
-button:hover{
-  background:#2563eb;
 }
 </style>
 </head>
@@ -151,9 +120,6 @@ button:hover{
 </div>
 
 <script>
-
-let typingDiv;
-
 async function send(){
   let input = document.getElementById("msg");
   let text = input.value;
@@ -162,22 +128,19 @@ async function send(){
   add(text,"user");
   input.value="";
 
-  showTyping();
-
   try{
     let res = await fetch("https://remas-ai.vercel.app/api/chat", {
       method:"POST",
-      headers:{"Content-Type":"application/json"},
+      headers:{
+        "Content-Type":"application/json"
+      },
       body:JSON.stringify({message:text})
     });
 
     let data = await res.json();
-
-    hideTyping();
     add(data.reply,"bot");
 
   }catch(e){
-    hideTyping();
     add("خطأ في الاتصال ❌","bot");
   }
 }
@@ -187,23 +150,7 @@ function add(text,type){
   div.className="msg "+type;
   div.textContent=text;
   document.getElementById("chat").appendChild(div);
-  document.getElementById("chat").scrollTop = 999999;
 }
-
-/* ⏳ typing effect */
-function showTyping(){
-  typingDiv=document.createElement("div");
-  typingDiv.className="typing";
-  typingDiv.textContent="ريماس AI يكتب...";
-  document.getElementById("chat").appendChild(typingDiv);
-}
-
-function hideTyping(){
-  if(typingDiv){
-    typingDiv.remove();
-  }
-}
-
 </script>
 
 </body>
