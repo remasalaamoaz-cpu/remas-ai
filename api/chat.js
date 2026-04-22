@@ -1,12 +1,41 @@
-export default function handler(req, res) {
-  try {
-    const msg = req.body?.message || "";
+import OpenAI from "openai";
 
-    return res.status(200).json({
-      reply: "أنا ريماس AI 🤖 شغال تمام واستلمت: " + msg
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+export default async function handler(req, res) {
+  try {
+    if (req.method !== "POST") {
+      return res.status(405).json({ reply: "POST only" });
+    }
+
+    const msg = req.body?.message;
+
+    if (!msg) {
+      return res.status(200).json({ reply: "اكتب سؤالك 🤖" });
+    }
+
+    const response = await client.chat.completions.create({
+      model: "gpt-4o-mini",
+      temperature: 0.7,
+      messages: [
+        {
+          role: "system",
+          content: "أنت مساعد ذكي اسمه ريماس AI، تجيب على أي سؤال بالعربية بطريقة بسيطة وواضحة."
+        },
+        {
+          role: "user",
+          content: msg
+        }
+      ]
     });
 
-  } catch (e) {
+    return res.status(200).json({
+      reply: response.choices[0].message.content
+    });
+
+  } catch (err) {
     return res.status(500).json({
       reply: "خطأ في السيرفر ❌"
     });
